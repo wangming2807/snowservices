@@ -5,7 +5,7 @@
 
 This is a program which silences your phone based on the pitch the phone makes. For example: I want my phone to be silenced when I put it upside down in my pants. I'll automagically go from audibly ringing to vibrate only when it's upside down for a couple of secs. The angles and delay can be set.
 
-[wiki/screens/GravityRingerScreen0.png]
+screens/GravityRingerScreen0.png
 
 
 = Notes = 
