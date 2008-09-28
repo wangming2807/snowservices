@@ -8,4 +8,4 @@ This is a program which silences your phone based on the pitch the phone makes. 
 
 = Notes = 
 
-In the svn is a version which is able to be used with the OpenIntents SensorEmulator, just get the source from svn and change the {{{eu.MrSnowflake.android.gravityringe.GravityRinger.USE_ANDROID_SENSORS}}} to false and compile. This will give you a version which works together with the SensorEmulator.
+In the svn is a version which is able to be used with the [http://www.openintents.org OpenIntents] [http://www.openintents.org/en/node/6 SensorEmulator], just get the source from svn and change the {{{eu.MrSnowflake.android.gravityringe.GravityRinger.USE_ANDROID_SENSORS}}} to false and compile. This will give you a version which works together with the SensorEmulator.
