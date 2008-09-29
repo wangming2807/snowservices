@@ -15,9 +15,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class GravityRinger extends Activity  implements SensorListener {
@@ -74,6 +77,7 @@ public class GravityRinger extends Activity  implements SensorListener {
 	    	finish();
 	    }
         
+	    layMain = (LinearLayout)findViewById(R.id.layMain);
         txtDelay = (EditText)findViewById(R.id.txtDelay);
         txtNoisyThreshold = (EditText)findViewById(R.id.txtNoisyThreshold);
         txtSilenceThreshold = (EditText)findViewById(R.id.txtSilenceThreshold);
@@ -113,6 +117,8 @@ public class GravityRinger extends Activity  implements SensorListener {
         btnActivateService.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				Animation anim = AnimationUtils.loadAnimation(GravityRinger.this, R.anim.shake);
+				GravityRinger.this.layMain.startAnimation(anim);
 				startService();
 		        Toast.makeText(GravityRinger.this, "GravityRinger service started", Toast.LENGTH_SHORT).show();
 			}
@@ -228,6 +234,7 @@ public class GravityRinger extends Activity  implements SensorListener {
 		return !error;
 	}
 
+	private LinearLayout layMain;
 	private EditText txtDelay;
     private EditText txtNoisyThreshold;
     private EditText txtSilenceThreshold;
