@@ -11,4 +11,17 @@
     <string name="noisy_treshold_button">Set Angle</string>
     <string name="keylock">Auto lock/unlock keys</string>
     <string name="autostart">Start the service automatically</string>
+    
+    <string name="service_started">GravityRinger service started</string>
+    <string name="service_stopped">GravityRinger service stopped</string>
+    
+    <!-- Dialog boxes -->
+    <string name="alert_values_title">Values incorrect</string>
+    <string name="alert_values_message">Do you want to edit the values or go back without saving?</string>
+    <string name="alert_values_btn_edit">Edit</string>
+    <string name="alert_values_btn_back">Go Back</string>
+    
+    <!-- Error messages -->
+    <string name="error_values_not_integer">Is not a valid integer value!</string>
+    <string name="error_values_not_number">Is not a valid number!</string>
 </resources>

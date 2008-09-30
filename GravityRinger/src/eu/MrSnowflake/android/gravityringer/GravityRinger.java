@@ -4,13 +4,16 @@ import org.openintents.hardware.SensorManagerSimulator;
 import org.openintents.provider.Hardware;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.SensorListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,8 +36,8 @@ public class GravityRinger extends Activity  implements SensorListener {
 	private static final int MODE_NOISY = 0;
 	private static final int MODE_SILENCE = 1;
 	
-	private static final int MENU_SAVE = Menu.FIRST + 1;
-	private static final int MENU_CANCEL = Menu.FIRST + 2;
+	private static final int MENU_CANCEL = Menu.FIRST + 1;
+	private static final int MENU_REVERT = Menu.FIRST + 2;
 	
 	public class Preferences
 	{
@@ -85,12 +88,7 @@ public class GravityRinger extends Activity  implements SensorListener {
 		chkAutoStart = (CheckBox)findViewById(R.id.chkAutoStart);
 
         mSettings = getSharedPreferences(Preferences.PREFS_NAME, 0);
-        
-        txtDelay.setText(""+mSettings.getInt(Preferences.DELAY, 1000));
-        txtSilenceThreshold.setText(""+mSettings.getFloat(Preferences.SILENCE_GRAVITY, 5.0f));
-		txtNoisyThreshold.setText(""+mSettings.getFloat(Preferences.NOISY_GRAVITY, -5.0f));
-		chkKeyLock.setChecked(mSettings.getBoolean(Preferences.LOCK_KEYS, true));
-		chkAutoStart.setChecked(mSettings.getBoolean(Preferences.AUTO_START, true));
+        initSettings();
 
 		btnSetSilence = (Button)findViewById(R.id.btnSilenceThreshold);
 		btnSetSilence.setOnClickListener(new OnClickListener(){
@@ -120,7 +118,7 @@ public class GravityRinger extends Activity  implements SensorListener {
 				Animation anim = AnimationUtils.loadAnimation(GravityRinger.this, R.anim.shake);
 				GravityRinger.this.layMain.startAnimation(anim);
 				startService();
-		        Toast.makeText(GravityRinger.this, "GravityRinger service started", Toast.LENGTH_SHORT).show();
+		        Toast.makeText(GravityRinger.this, R.string.service_started, Toast.LENGTH_SHORT).show();
 			}
         });
 
@@ -131,11 +129,19 @@ public class GravityRinger extends Activity  implements SensorListener {
 				Intent serviceIntent = new Intent(GravityRinger.this, GravityRingerService.class);
 				Log.d(TAG, "Stop service");
 		        if (stopService(serviceIntent)) {
-			        Toast.makeText(GravityRinger.this, "GravityRinger service stopped", Toast.LENGTH_SHORT).show();
+			        Toast.makeText(GravityRinger.this, R.string.service_stopped, Toast.LENGTH_SHORT).show();
 		        	Log.d(TAG, "Service Stopped!");
 		        }
 			}
         });
+    }
+    
+    private void initSettings() {
+        txtDelay.setText(""+mSettings.getInt(Preferences.DELAY, 1000));
+        txtSilenceThreshold.setText(""+mSettings.getFloat(Preferences.SILENCE_GRAVITY, 5.0f));
+		txtNoisyThreshold.setText(""+mSettings.getFloat(Preferences.NOISY_GRAVITY, -5.0f));
+		chkKeyLock.setChecked(mSettings.getBoolean(Preferences.LOCK_KEYS, true));
+		chkAutoStart.setChecked(mSettings.getBoolean(Preferences.AUTO_START, true));
     }
     
     private void startService() {
@@ -168,33 +174,56 @@ public class GravityRinger extends Activity  implements SensorListener {
     
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-    	MenuItem item = menu.add(0, MENU_SAVE, 0, "Save");
-    	item.setIcon(android.R.drawable.ic_menu_save);
-    	//item.setAlphabeticShortcut('S');
-
-    	MenuItem mnuClose = menu.add(0, MENU_CANCEL, 0, "Cancel/close");
+    	MenuItem item = menu.add(0, MENU_REVERT, 0, "Revert settings");
+    	item.setIcon(android.R.drawable.ic_menu_revert);
+    	item.setAlphabeticShortcut('r');
+    	MenuItem mnuClose = menu.add(0, MENU_CANCEL, 0, "Cancel");
     	mnuClose.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
-    	//mnuClose.setAlphabeticShortcut('Q');
+    	mnuClose.setAlphabeticShortcut('q');
     	
 		return super.onCreateOptionsMenu(menu);
 	}
     
     @Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+	    	Log.i(TAG, "Save Settings");
+			if (!saveSettings(false)) {
+				new AlertDialog.Builder(this)
+				.setTitle(R.string.alert_values_title)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setMessage(R.string.alert_values_message)
+				.setNeutralButton(R.string.alert_values_btn_edit, null)
+				.setNegativeButton(R.string.alert_values_btn_back, new android.content.DialogInterface.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						GravityRinger.this.finish();
+					}
+				})
+				.show();
+			} else
+				return super.onKeyDown(keyCode, event);
+			return true;
+		}
+		
+		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case MENU_SAVE:
-			if (saveSettings())
-				;//finish();
-			break;
 		case MENU_CANCEL:
 			finish();
+			break;
+		case MENU_REVERT:
+			initSettings();
 			break;
 		}
 		
 		return super.onOptionsItemSelected(item);
 	}
 
-	private boolean saveSettings() {
+	private boolean saveSettings(boolean notify) {
 		SharedPreferences.Editor editor = mSettings.edit();
 		int delay = 0;
 		Float silence = 0f, noisy = 0f;
@@ -202,19 +231,19 @@ public class GravityRinger extends Activity  implements SensorListener {
 		try {
 			delay = Integer.parseInt(this.txtDelay.getText().toString());
 		} catch (NumberFormatException ex) {
-			Toast.makeText(this, "Delay is not a valid integer!", Toast.LENGTH_SHORT).show();
+			txtDelay.setError(getText(R.string.error_values_not_integer));
 			error = true;
 		}
 		try {
 			silence = Float.parseFloat(this.txtSilenceThreshold.getText().toString());
 		} catch (NumberFormatException ex) {
-			Toast.makeText(this, "Silence threshold is not a valid number!", Toast.LENGTH_SHORT).show();
+			txtSilenceThreshold.setError(getText(R.string.error_values_not_number));
 			error = true;
 		}
 		try {
 			noisy = Float.parseFloat(this.txtNoisyThreshold.getText().toString());
 		} catch (NumberFormatException ex) {
-			Toast.makeText(this, "Noisy threashold is not a valid number!", Toast.LENGTH_SHORT).show();
+			txtNoisyThreshold.setError(getText(R.string.error_values_not_number));
 			error = true;
 		}
 		
@@ -228,7 +257,8 @@ public class GravityRinger extends Activity  implements SensorListener {
 			editor.putBoolean(Preferences.LOCK_KEYS, lockKeys);
 			editor.putBoolean(Preferences.AUTO_START, autoStart);
 			editor.commit();
-			Toast.makeText(this, "Settings saved", Toast.LENGTH_SHORT).show();
+			if (notify)
+				Toast.makeText(this, "Settings saved", Toast.LENGTH_SHORT).show();
 			startService();
 		}
 		return !error;
@@ -247,6 +277,7 @@ public class GravityRinger extends Activity  implements SensorListener {
     private Button btnDeactivateService;
 	private SensorManager mSensorMgr = null;
 	
+	private boolean mKilled = false;
 	private SharedPreferences mSettings;
 	private float mCurrentAngle;
 	private boolean mReadSensor = false;
