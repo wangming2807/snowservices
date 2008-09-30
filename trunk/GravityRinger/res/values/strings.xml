@@ -20,6 +20,8 @@
     <string name="alert_values_message">Do you want to edit the values or go back without saving?</string>
     <string name="alert_values_btn_edit">Edit</string>
     <string name="alert_values_btn_back">Go Back</string>
+    <string name="alert_sensors_orientation_not_available">The orientation sensor does not seem te be present.</string>
+    <string name="alert_sensors_orientation_title">Orientation sensor not present</string>
     
     <!-- Error messages -->
     <string name="error_values_not_integer">Is not a valid integer value!</string>

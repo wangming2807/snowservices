@@ -29,7 +29,7 @@ import android.widget.Toast;
 public class GravityRinger extends Activity  implements SensorListener {
 	// To be deleted in final
 	// Only here to make it possible to use the OpenIntents sensor simulator
-	public static final boolean USE_ANDROID_SENSORS = false;
+	public static final boolean USE_ANDROID_SENSORS = true;
 	
 	public static final String TAG = "GravityRinger";
 	
@@ -76,8 +76,18 @@ public class GravityRinger extends Activity  implements SensorListener {
 	    if (!mSensorMgr.registerListener(this, SensorManager.SENSOR_ORIENTATION))
 	    {
 	    	Log.e(TAG, "Could not register a listener for SENSOR_ORIENTATION");
-	    	//Error msg
-	    	finish();
+	    	new AlertDialog.Builder(this)
+	    	.setTitle(R.string.alert_sensors_orientation_title)
+	    	.setMessage(R.string.alert_sensors_orientation_not_available)
+	    	.setIcon(android.R.drawable.ic_dialog_alert)
+	    	.setNegativeButton(android.R.string.ok, new android.content.DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					GravityRinger.this.finish();
+				}
+	    	})
+	    	.setCancelable(false)
+	    	.show();
 	    }
         
 	    layMain = (LinearLayout)findViewById(R.id.layMain);
