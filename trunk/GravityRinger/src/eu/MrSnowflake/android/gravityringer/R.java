@@ -37,13 +37,25 @@ public final class R {
     }
     public static final class string {
         public static final int activate_service=0x7f050001;
+        public static final int alert_values_btn_back=0x7f05000f;
+        public static final int alert_values_btn_edit=0x7f05000e;
+        public static final int alert_values_message=0x7f05000d;
+        /**  Dialog boxes 
+         */
+        public static final int alert_values_title=0x7f05000c;
         public static final int app_name=0x7f050000;
         public static final int autostart=0x7f050009;
         public static final int deactivate_service=0x7f050002;
         public static final int delay=0x7f050003;
+        /**  Error messages 
+         */
+        public static final int error_values_not_integer=0x7f050010;
+        public static final int error_values_not_number=0x7f050011;
         public static final int keylock=0x7f050008;
         public static final int noisy_treshold=0x7f050006;
         public static final int noisy_treshold_button=0x7f050007;
+        public static final int service_started=0x7f05000a;
+        public static final int service_stopped=0x7f05000b;
         public static final int silence_treshold=0x7f050004;
         public static final int silence_treshold_button=0x7f050005;
     }
