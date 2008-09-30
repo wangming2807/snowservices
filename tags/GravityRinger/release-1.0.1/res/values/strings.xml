@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gravity Ringer</string>
+    <string name="activate_service">Activate Service</string>
+    <string name="deactivate_service">Deactivate Service</string>
+    
+    <string name="delay">Delay (in ms):</string>
+    <string name="silence_treshold">Angle at which the phone will be silenced</string>
+    <string name="silence_treshold_button">Set Angle</string>  
+    <string name="noisy_treshold">Angle at which the phone will be noisy again</string>
+    <string name="noisy_treshold_button">Set Angle</string>
+    <string name="keylock">Auto lock/unlock keys</string>
+    <string name="autostart">Start the service automatically</string>
+</resources>
