@@ -42,20 +42,36 @@ public class SnowGesture {
 	 * To be deleted!!!!
 	 * @param bool
 	 */
-	public SnowGesture(boolean bool) {
+	public SnowGesture(float minDist, boolean bool) {
+		init();
 		mDebug = bool;
-		mGesture = new String();
-		
-		mGestureCompleteListeners = new ArrayList<GestureCompleteListener>();
-		mGestureListeners = new HashMap<String, GestureListener>();		
+		mMinDistance = minDist;
 	}
 		
+	/**
+	 * Default constructor, should be good for almost anyone.
+	 */
 	public SnowGesture() {
+		init();
+	}
+	
+	/**
+	 * Constructor which allows to manually set the minimal distance between 2 point to be counted as valid, 
+	 * to compensate for inaccuracies of the touch screen or input.
+	 * @param minDist The minimal distance between 2 points to be counted as valid. (default 2.0)
+	 */
+	public SnowGesture(float minDist) {
+		init();
+		mMinDistance = minDist;
+	}
+	
+	private void init() {
 		mDebug = false;
 		mGesture = new String();
 		
 		mGestureCompleteListeners = new ArrayList<GestureCompleteListener>();
-		mGestureListeners = new HashMap<String, GestureListener>();		
+		mGestureListeners = new HashMap<String, GestureListener>();
+		mMinDistance = 2.0f;
 	}
 	
 	/**
@@ -128,6 +144,11 @@ public class SnowGesture {
     		} else {
     			float x = event.getX();
     			float y = event.getY();
+
+    			float dist = (float)Math.sqrt(Math.pow(mGestureX - x, 2)+Math.pow(mGestureY - y, 2));
+    			if (dist < mMinDistance)
+    				return;
+    			
     			Log.d(TAG, "pX: "+mGestureX+" x: "+x+" pY: "+mGestureY+" y: "+y);
     			float mX = mGestureX - x;
     			float mY = mGestureY - y;
@@ -171,6 +192,8 @@ public class SnowGesture {
 	private float mGestureX;
 	private float mGestureY;
 	private boolean mDebug;
+	//! Minimal distance between 2 points to be counted as valid.
+	private float mMinDistance;
 	
 	private ArrayList<GestureCompleteListener> mGestureCompleteListeners;
 	private HashMap<String, GestureListener> mGestureListeners;
