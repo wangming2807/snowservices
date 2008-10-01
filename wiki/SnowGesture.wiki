@@ -1,0 +1,11 @@
+#summary SnowGestures is a simple Gesture recognizer.
+#labels Featured
+
+= SnowGestures =
+
+This class makes it easier for developers to implement simple gestures. The class recognizes 4 different directions: Up, 
+Down, Left and Right.
+
+== How to implement ==
+
+ First, ofcourse, initialise an instance of SnowGesture. 
