@@ -12,10 +12,12 @@ import android.content.SharedPreferences;
 import android.hardware.SensorListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -29,7 +31,7 @@ import android.widget.Toast;
 public class GravityRinger extends Activity  implements SensorListener {
 	// To be deleted in final
 	// Only here to make it possible to use the OpenIntents sensor simulator
-	public static final boolean USE_ANDROID_SENSORS = true;
+	public static final boolean USE_ANDROID_SENSORS = false;
 	
 	public static final String TAG = "GravityRinger";
 	
@@ -47,6 +49,8 @@ public class GravityRinger extends Activity  implements SensorListener {
 		public static final String NOISY_GRAVITY = "NoisyGravity";
 		public static final String LOCK_KEYS = "LockKeys";
 		public static final String AUTO_START = "AutoStart";
+		
+		public static final String EMULATOR_IMEI = "000000000000000";
 	}
 	
     /** Called when the activity is first created. */
@@ -55,9 +59,11 @@ public class GravityRinger extends Activity  implements SensorListener {
     	Log.d(TAG, "started");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        
+
+        mTelephonyMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);        
 		//to be deleted in final
-	    if (USE_ANDROID_SENSORS) {
+        // always use simulator when in emulator 
+	    if (!mTelephonyMgr.getDeviceId().equals(Preferences.EMULATOR_IMEI) || USE_ANDROID_SENSORS) {
 	        // Android sensor Manager
 	    	mSensorMgr = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
 	    } else {
@@ -127,7 +133,7 @@ public class GravityRinger extends Activity  implements SensorListener {
 			public void onClick(View v) {
 				Animation anim = AnimationUtils.loadAnimation(GravityRinger.this, R.anim.shake);
 				GravityRinger.this.layMain.startAnimation(anim);
-				startService();
+				GravityRinger.this.startService();
 		        Toast.makeText(GravityRinger.this, R.string.service_started, Toast.LENGTH_SHORT).show();
 			}
         });
@@ -136,12 +142,7 @@ public class GravityRinger extends Activity  implements SensorListener {
         btnDeactivateService.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent serviceIntent = new Intent(GravityRinger.this, GravityRingerService.class);
-				Log.d(TAG, "Stop service");
-		        if (stopService(serviceIntent)) {
-			        Toast.makeText(GravityRinger.this, R.string.service_stopped, Toast.LENGTH_SHORT).show();
-		        	Log.d(TAG, "Service Stopped!");
-		        }
+				GravityRinger.this.stopService();
 			}
         });
     }
@@ -159,7 +160,16 @@ public class GravityRinger extends Activity  implements SensorListener {
 		Log.d(TAG, "Start service");
         startService(serviceIntent);
     }
-    
+
+	private void stopService() {
+		Intent serviceIntent = new Intent(GravityRinger.this, GravityRingerService.class);
+		Log.d(TAG, "Stop service");
+        if (stopService(serviceIntent)) {
+	        Toast.makeText(GravityRinger.this, R.string.service_stopped, Toast.LENGTH_SHORT).show();
+        	Log.d(TAG, "Service Stopped!");
+        }
+	}
+
 	@Override
 	public void onAccuracyChanged(int arg0, int arg1) {
 	}
@@ -195,8 +205,46 @@ public class GravityRinger extends Activity  implements SensorListener {
 	}
     
     @Override
+	public boolean onTouchEvent(MotionEvent event) {
+    	if (event.getAction() == MotionEvent.ACTION_DOWN) {
+    		mGesture = new String();
+			mGestureX = -1;
+			mGestureY = -1;
+    		
+    	} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+    		if (mGestureX == -1 || mGestureY == -1) {
+    			mGestureX = event.getX();
+    			mGestureY = event.getY();
+    		} else {
+    			float x = event.getX();
+    			float y = event.getY();
+    			if (mGestureX - x < mGestureY - y)
+    				if (mGestureY - y > 0)
+    					mGesture += "U";
+    				else 
+    					mGesture += "R";
+				else if (mGestureX - x > mGestureY - y)
+    				if (mGestureX - x > 0)
+    					mGesture += "L";
+    				else 
+    					mGesture += "D";
+    			
+    			mGestureX = event.getX();
+    			mGestureY = event.getY();
+    		}
+    		//if (event.getHistorySize() == )
+    		
+    	} else if (event.getAction() == MotionEvent.ACTION_UP)
+    		Log.d(TAG, "Gestures" + mGesture);
+//    		startService();
+    		//stopService();
+    	
+		return super.onTouchEvent(event);
+	}
+
+	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+    	if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
 	    	Log.i(TAG, "Save Settings");
 			if (!saveSettings(false)) {
 				new AlertDialog.Builder(this)
@@ -274,6 +322,10 @@ public class GravityRinger extends Activity  implements SensorListener {
 		return !error;
 	}
 
+	private String mGesture;
+	private float mGestureX;
+	private float mGestureY;
+	
 	private LinearLayout layMain;
 	private EditText txtDelay;
     private EditText txtNoisyThreshold;
@@ -286,10 +338,9 @@ public class GravityRinger extends Activity  implements SensorListener {
     private Button btnActivateService;
     private Button btnDeactivateService;
 	private SensorManager mSensorMgr = null;
+	private TelephonyManager mTelephonyMgr;	
 	
-	private boolean mKilled = false;
 	private SharedPreferences mSettings;
-	private float mCurrentAngle;
 	private boolean mReadSensor = false;
 	private int mReadMode = 0;
 }
