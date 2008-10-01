@@ -128,22 +128,29 @@ public class SnowGesture {
     		} else {
     			float x = event.getX();
     			float y = event.getY();
-    			if (mGestureX - x < mGestureY - y)
-    				if (mGestureY - y >= 0) {
+    			Log.d(TAG, "pX: "+mGestureX+" x: "+x+" pY: "+mGestureY+" y: "+y);
+    			float mX = mGestureX - x;
+    			float mY = mGestureY - y;
+    			if (Math.abs(mX) < Math.abs(mY))
+    				if (mGestureY - y == 0)
+    					;
+    				else if (mGestureY - y > 0) {
     					if (mGesture.charAt(mGesture.length() - 1) != 'U')
     						mGesture += "U";
     				}
     				else {
-    					if (mGesture.charAt(mGesture.length() - 1) != 'R')
-    						mGesture += "R";
+    					if (mGesture.charAt(mGesture.length() - 1) != 'D')
+    						mGesture += "D";
     				}
-				else if (mGestureX - x > mGestureY - y)
-    				if (mGestureX - x >= 0) {
+				else if (Math.abs(mX) > Math.abs(mY))
+    				if (mGestureX - x == 0)
+    					;
+    				else if (mGestureX - x >= 0) {
     					if (mGesture.charAt(mGesture.length() - 1) != 'L')
     						mGesture += "L";
     				} else {
-    					if (mGesture.charAt(mGesture.length() - 1) != 'D')
-    						mGesture += "D";
+    					if (mGesture.charAt(mGesture.length() - 1) != 'R')
+    						mGesture += "R";
     				}
     			
     			mGestureX = event.getX();
