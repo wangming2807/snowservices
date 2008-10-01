@@ -81,3 +81,8 @@ public class SnowGestureTest extends Activity {
 This doesn't do much, but it should make clear how to use the SnowGesture class.
 
 If you have any questions left, look through the docs of the class itself, or leave a comment.
+
+= Character Recognizer =
+
+Just for fun I implemented a simple character recognizer, which recognizes the 26 letter is the alphabet and the '?' (for the video :)). This is just a Proof of concept as it's a really crude recognition.
+
