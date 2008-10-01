@@ -84,6 +84,6 @@ If you have any questions left, look through the docs of the class itself, or le
 
 = Character Recognizer =
 
-Just for fun I implemented a simple character recognizer, which recognizes the 26 letter is the alphabet and the '?' (for the video :)). This is just a Proof of concept as it's a really crude recognition.
+Just for fun I implemented a simple character recognizer, which recognizes the 26 letter is the alphabet and the '?' (for the video :)). This is just a Proof of concept as it's a really crude recognition. The code is in the svn! Check it out.
+
 http://www.youtube.com/watch?v=QrrqxQpAapk
-The code is in the svn! Check it out.
