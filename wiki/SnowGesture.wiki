@@ -27,8 +27,8 @@ In case the gesture string contains unknow direction characters, the `registerGe
 
 This is a very simple (yet working :) ) example:
 {{{
-public class SnowGestureCreator extends Activity {
-	private static final String TAG = "SnowGestureCreator";
+public class SnowGestureTest extends Activity {
+	private static final String TAG = "SnowGestureTest";
 	
     /** Called when the activity is first created. */
     @Override
@@ -77,3 +77,7 @@ public class SnowGestureCreator extends Activity {
     private SnowGesture mGesture;
 }
 }}}
+
+This doesn't do much, but it should make clear how to use the SnowGesture class.
+
+If you have any questions left, look through the docs of the class itself, or leave a comment.
