@@ -14,7 +14,7 @@ public class SnowGestureCreator extends Activity {
         
         txtGesture = (EditText)findViewById(R.id.txtGesture);
         
-        mGesture = new SnowGesture(true);
+        mGesture = new SnowGesture(3.0f, true);
         mGesture.registerGestureCompleteListener(new SnowGesture.GestureCompleteListener() {
 			@Override
 			public void onGestureCompleted(String gesture) {
