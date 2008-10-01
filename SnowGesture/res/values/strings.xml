@@ -2,5 +2,6 @@
 <resources>
     <string name="gesture">The gesture you made:</string>
     <string name="app_name">SnowGesture Creator</string>
+    <string name="char_recognizer_name">SnowGesture Character Recognizer</string>
     <string name="info">(c)2008 Mr'Maarten Krijn'Snowflake</string>
 </resources>
