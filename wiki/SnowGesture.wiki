@@ -8,4 +8,15 @@ Down, Left and Right.
 
 == How to implement ==
 
- First, ofcourse, initialise an instance of SnowGesture. 
+ First, ofcourse, initialise an instance of SnowGesture. Then you have two options:
+ * Use a ´SnowGesture.GestureListener` to register a gesture and it accompanying listener.
+ * Use a 'SnowGesture.GestureCompleteListener' to implement the recognition yourself.
+
+== Gesture string ==
+
+A gesture string consists of characters which indicate a direction: U for up, D for down, R for right and L for left. The gesture string should be in upper case, but the registerGesture converts it to upper case in case you didn't already.
+An example:
+{{{
+String gestureString = "LRU";
+}}}
+Means first go Left then Right and then Up.
