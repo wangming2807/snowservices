@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
     <jar path="D:/Development/Projects/Android/snowservices/trunk/DroidGaming/lib/DroidGaming.jar"/>
-    <options buildIfNeeded="true" compress="true" descriptionLocation="/DroidGaming/jar.jardesc" exportErrors="false" exportWarnings="false" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/DroidGaming/jar.jardesc" exportErrors="false" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
     <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
@@ -10,8 +10,10 @@
             <packagesToUnSeal/>
         </sealing>
     </manifest>
-    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <javaElement handleIdentifier="=DroidGaming/src&lt;eu.MrSnowflake.android.droidgaming"/>
+    <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
+        <javaElement handleIdentifier="=DroidGaming/src&lt;eu.MrSnowflake.android.droidgaming{DroidGamingView.java"/>
+        <javaElement handleIdentifier="=DroidGaming/src&lt;eu.MrSnowflake.android.droidgaming{DroidGamingThread.java"/>
+        <javaElement handleIdentifier="=DroidGaming/src&lt;eu.MrSnowflake.android.droidgaming{DroidGamingActivity.java"/>
     </selectedElements>
     <fatjar builder="org.eclipse.jdt.ui.plain_jar_builder" launchConfig=""/>
 </jardesc>
