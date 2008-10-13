@@ -43,6 +43,10 @@ public class DroidGamingView extends SurfaceView implements SurfaceHolder.Callba
     	return mThread;
     }
 
+    public void setClearColor(int a, int r, int g, int b) {
+    	
+    }
+    
     @Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		return mThread.onKeyDown(keyCode, event);
@@ -82,6 +86,7 @@ public class DroidGamingView extends SurfaceView implements SurfaceHolder.Callba
         // start the thread here so that we don't busy-wait in run()
         // waiting for the surface to be created
         mThread.setRunning(true);
+        mThread.start();
     }
 
     /*
