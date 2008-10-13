@@ -73,6 +73,7 @@ public class DroidGamingThread extends Thread {
 	/**
 	 * GameListeners allow you to handle events in the rendering cycle. You should implement this
 	 * interface to make games.
+	 * 
 	 * @author Maarten 'MrSnowflake' Krijn
 	 */
 	public interface GameListener {
@@ -105,6 +106,7 @@ public class DroidGamingThread extends Thread {
 	private static final String TAG = "DroidGamingThread";
 	
 	/**
+	 * Constructor with the parent context of the {@link DroidGamingView} and the SurfaceHolder.
 	 * 
 	 * @param context The context from which to load resources
 	 * @param holder The surface holder.
@@ -134,18 +136,37 @@ public class DroidGamingThread extends Thread {
 	public boolean removeGameListener(GameListener listener) {
 		return mListeners.remove(listener);
 	}
-	
+
+	/**
+	 * DO NOT CALL YOURSELF. This will be called by the DroidGamingView, when the Surface comes up.
+	 */
 	@Override
 	public void start() {
 		mLastTime = System.currentTimeMillis();
 		super.start();
 	}
 	
+	/** 
+	 * Called by DroidGamingView when the size of the Surface changes.
+	 * DO NOT CALL YOURSELF!
+	 * 
+	 * @param width Width of the surface.
+	 * @param height Height of the surface.
+	 */
 	public void setSurfaceSize(int width, int height) {
 		mCanvasWidth = width;
 		mCanvasHeight = height;
 	}
 	
+	/**
+	 * Set the state of this thread to running. When you setRunning to false, the thread will exit, and it 
+	 * won't come back. So do only call when ending the game.
+	 * If you want to pause the game use {@link #pause()} and {@link #unPause()}.
+	 * 
+	 * @param running The state of the thread.
+	 * @see #pause()
+	 * @see #unPause()
+	 */
 	public void setRunning(boolean running) {
 		mRunning = running;
 	}
@@ -170,26 +191,48 @@ public class DroidGamingThread extends Thread {
 	}
 
 	public boolean onTouchEvent(MotionEvent event) {
-		return true;
+		return false;
 	}
 
 	public boolean onTrackballEvent(MotionEvent event) {
-		return true;
+		return false;
 	}
 	
-	public void unPause() {    
+	/**
+	 * Unpauses the running of the gamethread. If you want real pause system you have to implement it in
+	 * {@link DroidGamingThread.GameListener#onFrameStart } and 
+	 * {@link DroidGamingThread.GameListener#onFrameEnd }. This is really pausing the thread, 
+	 * for example for when the Activity isn't visible anymore (default behavior).
+	 * 
+	 * @see #pause()
+	 * @see DroidGamingThread.GameListener#onFrameStart
+	 * @see DroidGamingThread.GameListener#onFrameEnd
+	 */
+	public void unPause() {
 		synchronized (mSurfaceHolder) {
 			mPaused = false;
             mLastTime = System.currentTimeMillis() + 100;
 	    }
 	}
 	
+	/**
+	 * Pauses the running of the gamethread. If you want real pause system you have to implement it in
+	 * {@link GameListener#onFrameStart} and {@link GameListener#onFrameEnd}. This is really pausing 
+	 * the thread, for example for when the Activity isn't visible anymore (default behaviour).
+	 * 
+	 * @see #unPause()
+	 * @see GameListener#onFrameEnd
+	 * @see GameListener#onFrameStart
+	 */
 	public void pause() {    
 		synchronized (mSurfaceHolder) {
 			mPaused = true;
 	    }
 	}
 	
+	/** 
+	 * Main thread handling the gameloop.
+	 */
 	@Override
 	public void run() {
         while (mRunning) {
@@ -236,10 +279,20 @@ public class DroidGamingThread extends Thread {
         }
 	}
 	
+	/**
+	 * Returns the width of the Canvas.
+	 * 
+	 * @return Returns the width of the Canvas.
+	 */
 	public int getWidth() {
 		return mCanvasWidth;
 	}
 	
+	/**
+	 * Returns the height of the Canvas.
+	 * 
+	 * @return Returns the height of the Canvas.
+	 */
 	public int getHeight() {
 		return mCanvasHeight;
 	}

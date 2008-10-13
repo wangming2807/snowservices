@@ -25,6 +25,12 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+/**
+ * The View you need to inflate in your contentview to be able to use DroidGaming. 
+ * 
+ * @author Maarten 'MrSnowflake' Krijn
+ * @version %I%, %G%
+ */
 public class DroidGamingView extends SurfaceView implements SurfaceHolder.Callback {
     public DroidGamingView(Context context, AttributeSet attrs) {
         super(context, attrs);
