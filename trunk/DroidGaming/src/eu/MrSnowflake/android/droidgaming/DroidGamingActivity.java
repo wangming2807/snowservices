@@ -18,7 +18,6 @@
 
 package eu.MrSnowflake.android.droidgaming;
 
-import eu.MrSnowflake.android.droidgaming.exceptions.GameViewNotFoundException;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -77,13 +76,13 @@ public abstract class DroidGamingActivity extends Activity {
 
     /**
      * Call this in your onCreate, after setContentView().
-     */
+     * /
     protected void init() throws GameViewNotFoundException {
     	/*mGameView = (DroidGamingView)findViewById(this.getResources().getR.id.game_view);
     	if (mGameView == null)
     		throw(new GameViewNotFoundException("No DroidGamingView with id game_view could be found."));
-    		*/
-    }
+    		* /
+    }*/
 
     protected void init(int resourceId) {
     	mGameView = (DroidGamingView)findViewById(resourceId);
