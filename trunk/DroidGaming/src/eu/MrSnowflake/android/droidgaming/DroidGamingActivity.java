@@ -25,8 +25,10 @@ import android.view.Window;
 import android.view.WindowManager;
 
 /**
+ * Extend this Activity to make you own DroidGaming Application.
  * 
  * @author Maarten 'MrSnowflake' Krijn
+ * @version %I%, %G%
  */
 public abstract class DroidGamingActivity extends Activity {
 	private static final String TAG = "DroidGamingActivity";
