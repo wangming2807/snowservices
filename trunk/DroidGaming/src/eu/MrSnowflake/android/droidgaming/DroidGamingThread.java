@@ -27,8 +27,10 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
 /**
+ * NOTE: Only extend if you know what you're doing.
  * 
  * @author Maarten 'MrSnowflake' Krijn
+ * @version %I%, %G%
  */
 public class DroidGamingThread extends Thread {
 	/**
@@ -36,21 +38,36 @@ public class DroidGamingThread extends Thread {
 	 * 
 	 * @author Maarten 'MrSnowflake' Krijn
 	 */
-	public class GameEvent {
-		public GameEvent(double elapsed) {
-			timeElapsed = elapsed;
+	public class GameEvent{
+		public GameEvent(GameEvent org){
+			timeElapsed = org.timeElapsed;
+			keysDown = org.keysDown.clone();
+			keysHeld = org.keysHeld.clone();
+			keysUp = org.keysUp.clone();
 		}
 		
-		//! How much time has elapsed since the last frame.
+		public GameEvent(double elapsed) {
+			timeElapsed = elapsed;
+			keysDown = new boolean[KeyEvent.MAX_KEYCODE + 1];
+			keysHeld = new boolean[KeyEvent.MAX_KEYCODE + 1];
+			keysUp = new boolean[KeyEvent.MAX_KEYCODE + 1];
+		}
+		
+		public void clearUpDown() {
+			keysDown = new boolean[KeyEvent.MAX_KEYCODE + 1];
+			keysUp = new boolean[KeyEvent.MAX_KEYCODE + 1];
+		}
+		
+		/** How much time has elapsed since the last frame. */
 		public double timeElapsed;
-		//! Which keys were changed since last frame.
-		public GameKeys keys;
-	}
-
-	public class GameKeys {
-		public int held;
-		public int down;
-		public int up;
+		/** Which keys were pressed down for the first time (not held down!). The index in this array
+		 * is KeyEvent.KEYCODE_* .
+		 */
+		public boolean keysDown[];
+		/** Which keys were held down. The index in this array is KeyEvent.KEYCODE_*. */
+		public boolean keysHeld[];
+		/** Which keys have been let up.. The index in this array is KeyEvent.KEYCODE_* . */
+		public boolean keysUp[];
 	}
 
 	/**
@@ -66,31 +83,38 @@ public class DroidGamingThread extends Thread {
 		 * @return Whether to stop the game loop. Note this will immediately quit the loop, without completing
 		 * 		the current frame.
 		 */
-		public boolean onFrameStart(GameEvent event);
+		public boolean onFrameStart(DroidGamingThread parent, final GameEvent event);
 		/**
 		 * Called when the Frame ended rendering.
 		 * 
 		 * @param event The GameEvent object containing information about the frame and state of the device.
-		 * @return Whether to stop the game loop. Note this wil immediately quit the loop, without completing
+		 * @return Whether to stop the game loop. Note this will immediately quit the loop, without completing
 		 * 		the current frame.
 		 */
-		public boolean onFrameEnd(GameEvent event);
+		public boolean onFrameEnd(DroidGamingThread parent, final GameEvent event);
 		/**
 		 * Draw to the canvas inside this function.
 		 *
 		 * @param canvas The canvas to draw to.
-		 * @return Whether to stop the game loop. Note this wil immediately quit the loop, without completing
+		 * @return Whether to stop the game loop. Note this will immediately quit the loop, without completing
 		 * 		the current frame.
 		 * TODO Check if this should be removed! 
 		 */
-		public boolean onRender(Canvas canvas);
+		public boolean onRender(DroidGamingThread parent, final Canvas canvas);
 	}
+	private static final String TAG = "DroidGamingThread";
 	
+	/**
+	 * 
+	 * @param context The context from which to load resources
+	 * @param holder The surface holder.
+	 */
 	public DroidGamingThread(Context context, SurfaceHolder holder) {
 		mContext = context;
 		mSurfaceHolder = holder;
 		mListeners = new ArrayList<GameListener>();
 		mRunning = false;
+		mGameEvent = new GameEvent(System.currentTimeMillis());
 	}
 
 	/**
@@ -127,22 +151,25 @@ public class DroidGamingThread extends Thread {
 	}
 	
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (!mGameEvent.keysHeld[keyCode])
+			mGameEvent.keysDown[keyCode] = true;
+		mGameEvent.keysHeld[keyCode] = true;
 		
 		return true;
 	}
 
-	public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
-		// TODO Auto-generated method stub
-		return true;
+	public boolean onKeyMultiple(int keyCode, int count, KeyEvent event) {
+		return false;
 	}
 
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
+		mGameEvent.keysUp[keyCode] = true;
+		mGameEvent.keysHeld[keyCode] = false;
+		
 		return true;
 	}
 
 	public boolean onTouchEvent(MotionEvent event) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
@@ -166,12 +193,13 @@ public class DroidGamingThread extends Thread {
 	@Override
 	public void run() {
         while (mRunning) {
-        	if (mPaused)
+        	if (mPaused) {
 				try {
 					sleep(200);
 				} catch (InterruptedException e) {
 				}
-        	
+        	}
+				
             Canvas canvas = null;
             try {
                 canvas = mSurfaceHolder.lockCanvas(null);
@@ -185,15 +213,17 @@ public class DroidGamingThread extends Thread {
                     double elapsed = (now - mLastTime) / 1000.0;
                     mLastTime = now;
         			
-                	GameEvent event = new GameEvent(elapsed);
-        			
+                    mGameEvent.timeElapsed = elapsed;
+                	GameEvent event = new GameEvent(mGameEvent);
+                	
         			int numListeners = mListeners.size();
         			for(int i = 0; i < numListeners && mRunning; ++i)
-        				mRunning = mListeners.get(i).onFrameStart(event);
+        				mRunning = mListeners.get(i).onFrameStart(this, event);
         			for(int i = 0; i < numListeners && mRunning; ++i)
-            			mRunning = mListeners.get(i).onRender(canvas);
+            			mRunning = mListeners.get(i).onRender(this, canvas);
         			for(int i = 0; i < numListeners && mRunning; ++i)
-            			mRunning = mListeners.get(i).onFrameEnd(event);
+            			mRunning = mListeners.get(i).onFrameEnd(this, event);
+        			mGameEvent.clearUpDown();
                 }
             } finally {
                 // do this in a finally so that if an exception is thrown
@@ -206,11 +236,20 @@ public class DroidGamingThread extends Thread {
         }
 	}
 	
+	public int getWidth() {
+		return mCanvasWidth;
+	}
+	
+	public int getHeight() {
+		return mCanvasHeight;
+	}
+	
 	protected Context mContext;
 	protected SurfaceHolder mSurfaceHolder;
 	protected int mCanvasWidth;
 	protected int mCanvasHeight;
 	
+	private GameEvent mGameEvent;
 	private boolean mPaused;
 	private ArrayList<GameListener> mListeners;
 	private boolean mRunning;
