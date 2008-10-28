@@ -12,12 +12,13 @@ public class GravityRingerReceiver extends BroadcastReceiver {
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		GravityRinger act = new GravityRinger();
-		SharedPreferences settings = act.getSharedPreferences(Preferences.PREFS_NAME, 0);
+		SharedPreferences settings = context.getSharedPreferences(Preferences.PREFS_NAME, 0);
 		
 		if (settings.getBoolean(Preferences.AUTO_START, true)) {
 			Log.i(TAG, "Service Started");
-			act.startService(new Intent(act, GravityRingerService.class));
+			Intent i = new Intent(context, GravityRingerService.class);
+			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			context.startService(i);
 		}
 	}
 }

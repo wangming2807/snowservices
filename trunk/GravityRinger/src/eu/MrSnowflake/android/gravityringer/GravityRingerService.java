@@ -19,7 +19,7 @@ import android.util.Log;
 public class GravityRingerService extends Service implements SensorListener {
 	// To be deleted in final
 	// Only here to make it possible to use the OpenIntents sensor simulator
-	public static final boolean USE_ANDROID_SENSORS = false;
+	public static final boolean USE_ANDROID_SENSORS = true;
 	
 	public static final String TAG = "GravityRingerService";
 
