@@ -1,8 +1,5 @@
 package eu.MrSnowflake.android.gravityringer;
 
-import org.openintents.hardware.SensorManagerSimulator;
-import org.openintents.provider.Hardware;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -29,10 +26,6 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class GravityRinger extends Activity  implements SensorListener {
-	// To be deleted in final
-	// Only here to make it possible to use the OpenIntents sensor simulator
-	public static final boolean USE_ANDROID_SENSORS = false;
-	
 	public static final String TAG = "GravityRinger";
 	
 	private static final int MODE_NOISY = 0;
@@ -49,8 +42,6 @@ public class GravityRinger extends Activity  implements SensorListener {
 		public static final String NOISY_GRAVITY = "NoisyGravity";
 		public static final String LOCK_KEYS = "LockKeys";
 		public static final String AUTO_START = "AutoStart";
-		
-		public static final String EMULATOR_IMEI = "000000000000000";
 	}
 	
     /** Called when the activity is first created. */
@@ -63,21 +54,8 @@ public class GravityRinger extends Activity  implements SensorListener {
         mTelephonyMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);        
 		//to be deleted in final
         // always use simulator when in emulator 
-	    if (!mTelephonyMgr.getDeviceId().equals(Preferences.EMULATOR_IMEI) || USE_ANDROID_SENSORS) {
-	        // Android sensor Manager
-	    	mSensorMgr = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
-	    } else {
-	    	// OpenIntents Sensor Emulator!
-			// Before calling any of the Simulator data, 
-			// the Content resolver has to be set !! 
-			Hardware.mContentResolver = getContentResolver(); 
-			
-			// Link sensor manager to OpenIntents Sensor simulator 
-			mSensorMgr = (SensorManager) new SensorManagerSimulator((SensorManager)
-					getSystemService(SENSOR_SERVICE));
-			
-			SensorManagerSimulator.connectSimulator(); 
-	    }
+        // Android sensor Manager
+    	mSensorMgr = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
 	    
 	    if (!mSensorMgr.registerListener(this, SensorManager.SENSOR_ORIENTATION))
 	    {

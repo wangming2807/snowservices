@@ -1,8 +1,5 @@
 package eu.MrSnowflake.android.gravityringer;
 
-import org.openintents.hardware.SensorManagerSimulator;
-import org.openintents.provider.Hardware;
-
 import android.app.KeyguardManager;
 import android.app.Service;
 import android.content.Context;
@@ -17,10 +14,6 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 public class GravityRingerService extends Service implements SensorListener {
-	// To be deleted in final
-	// Only here to make it possible to use the OpenIntents sensor simulator
-	public static final boolean USE_ANDROID_SENSORS = true;
-	
 	public static final String TAG = "GravityRingerService";
 
 	@Override
@@ -30,22 +23,8 @@ public class GravityRingerService extends Service implements SensorListener {
 		Log.d(TAG, TAG+" started");
 		
 		//to be deleted in final
-	    if (USE_ANDROID_SENSORS) {
-	        // Android sensor Manager
-	    	mSensorMgr = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
-	    } else {
-	    	// OpenIntents Sensor Emulator!
-			// Before calling any of the Simulator data, 
-			// the Content resolver has to be set !! 
-			Hardware.mContentResolver = getContentResolver(); 
-			
-			// Link sensor manager to OpenIntents Sensor simulator 
-			mSensorMgr = (SensorManager) new SensorManagerSimulator((SensorManager)
-					getSystemService(SENSOR_SERVICE));
-			
-			//sensorMgr.unregisterListener(mGraphView); 
-			SensorManagerSimulator.connectSimulator(); 
-	    }
+        // Android sensor Manager
+    	mSensorMgr = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
 	    
 	    if (!mSensorMgr.registerListener(this, SensorManager.SENSOR_ORIENTATION)) {
 	    	Log.e(TAG, "No suited sensor found");

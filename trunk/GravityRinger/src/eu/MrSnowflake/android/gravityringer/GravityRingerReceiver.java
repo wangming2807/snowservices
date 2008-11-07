@@ -9,16 +9,18 @@ import android.util.Log;
 
 public class GravityRingerReceiver extends BroadcastReceiver {
 	private static final String TAG = "GravityRingerReceiver";
+    private static final String ACTION = "android.intent.action.BOOT_COMPLETED";
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		SharedPreferences settings = context.getSharedPreferences(Preferences.PREFS_NAME, 0);
+		if (intent.getAction().equals(ACTION))
+		{
+			SharedPreferences settings = context.getSharedPreferences(Preferences.PREFS_NAME, 0);
 		
-		if (settings.getBoolean(Preferences.AUTO_START, true)) {
-			Log.i(TAG, "Service Started");
-			Intent i = new Intent(context, GravityRingerService.class);
-			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			context.startService(i);
-		}
+			if (settings.getBoolean(Preferences.AUTO_START, true)) {
+				Log.i(TAG, "GravityRingerService Started");
+				context.startService(new Intent(context, GravityRingerService.class));
+			}
+		} 
 	}
 }
