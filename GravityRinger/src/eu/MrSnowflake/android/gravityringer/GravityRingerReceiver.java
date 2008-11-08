@@ -17,7 +17,7 @@ public class GravityRingerReceiver extends BroadcastReceiver {
 		{
 			SharedPreferences settings = context.getSharedPreferences(Preferences.PREFS_NAME, 0);
 		
-			if (settings.getBoolean(Preferences.AUTO_START, true)) {
+			if (settings.getBoolean(Preferences.AUTO_START, false)) {
 				Log.i(TAG, "GravityRingerService Started");
 				context.startService(new Intent(context, GravityRingerService.class));
 			}
