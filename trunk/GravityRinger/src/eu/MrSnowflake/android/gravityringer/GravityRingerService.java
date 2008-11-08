@@ -97,7 +97,7 @@ public class GravityRingerService extends Service implements SensorListener {
 			active = false;
 			Log.d(GravityRingerService.TAG, "SilenceTask.run()");
 			mSilenced = true;
-			audioMgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+			audioMgr.setRingerMode(AudioManager.RINGER_MODE_SILENT);//.RINGER_MODE_VIBRATE);
 		}			
 	};
 	
