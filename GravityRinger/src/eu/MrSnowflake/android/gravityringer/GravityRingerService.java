@@ -1,6 +1,5 @@
 package eu.MrSnowflake.android.gravityringer;
 
-import android.app.KeyguardManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -33,14 +32,11 @@ public class GravityRingerService extends Service implements SensorListener {
 	    	Log.i(TAG, "SensorListener found");
         audioMgr = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
         mSilenced = audioMgr.getRingerMode() != AudioManager.RINGER_MODE_NORMAL;
-        //mKeyguardMgr = (KeyguardManager)this.getSystemService(Context.KEYGUARD_SERVICE);
-        mTelephonyMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 	    
         SharedPreferences settings = getSharedPreferences(GravityRinger.Preferences.PREFS_NAME, 0);
         mDelayMillis = settings.getInt(GravityRinger.Preferences.DELAY, 1000);
         mSilenceGravity = settings.getFloat(GravityRinger.Preferences.SILENCE_GRAVITY, 5.0f);
         mNoisyGravity = settings.getFloat(GravityRinger.Preferences.NOISY_GRAVITY, -5.0f);
-        mLockKeys = settings.getBoolean(GravityRinger.Preferences.LOCK_KEYS, true);
 	}
 
 	@Override
@@ -88,12 +84,6 @@ public class GravityRingerService extends Service implements SensorListener {
 			Log.d(GravityRingerService.TAG, "NoisyTask.run()");
 			mSilenced = false;
 			audioMgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-			if (mLockKeys) {
-				Log.d(TAG, "lockKeys");
-				mKeyguardLock = mKeyguardMgr.newKeyguardLock(TAG);
-				mKeyguardLock.reenableKeyguard();
-				Log.i(TAG, "State--"+mKeyguardMgr.inKeyguardRestrictedInputMode()); 				
-			}
 		}			
 	};
 	
@@ -108,10 +98,6 @@ public class GravityRingerService extends Service implements SensorListener {
 			Log.d(GravityRingerService.TAG, "SilenceTask.run()");
 			mSilenced = true;
 			audioMgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
-			if (mLockKeys && mKeyguardLock != null) {
-				mKeyguardLock.disableKeyguard();
-				Log.i(TAG, "State--"+mKeyguardMgr.inKeyguardRestrictedInputMode()); 				
-			}
 		}			
 	};
 	
@@ -124,15 +110,11 @@ public class GravityRingerService extends Service implements SensorListener {
 	private float mSilenceGravity;
 	//! The threshold at which angle the phone will get noisy 
 	private float mNoisyGravity;
-	//! Whether to lock the keys when silencing
-	private boolean mLockKeys;
 	
 	public boolean mSilenced = false;
 
 	private SensorManager mSensorMgr = null;
 	private AudioManager audioMgr = null;
-	private KeyguardManager mKeyguardMgr = null;
-	private KeyguardManager.KeyguardLock mKeyguardLock = null;
 	private TelephonyManager mTelephonyMgr;	
 
 	@Override

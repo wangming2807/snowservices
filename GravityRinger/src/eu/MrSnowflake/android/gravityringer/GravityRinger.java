@@ -9,12 +9,10 @@ import android.content.SharedPreferences;
 import android.hardware.SensorListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -40,7 +38,6 @@ public class GravityRinger extends Activity  implements SensorListener {
 		public static final String DELAY = "DelayMilis";
 		public static final String SILENCE_GRAVITY = "SilenceGravity";
 		public static final String NOISY_GRAVITY = "NoisyGravity";
-		public static final String LOCK_KEYS = "LockKeys";
 		public static final String AUTO_START = "AutoStart";
 	}
 	
@@ -51,7 +48,6 @@ public class GravityRinger extends Activity  implements SensorListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        mTelephonyMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);        
 		//to be deleted in final
         // always use simulator when in emulator 
         // Android sensor Manager
@@ -78,7 +74,6 @@ public class GravityRinger extends Activity  implements SensorListener {
         txtDelay = (EditText)findViewById(R.id.txtDelay);
         txtNoisyThreshold = (EditText)findViewById(R.id.txtNoisyThreshold);
         txtSilenceThreshold = (EditText)findViewById(R.id.txtSilenceThreshold);
-        chkKeyLock = (CheckBox)findViewById(R.id.chkKeyLock);
 		chkAutoStart = (CheckBox)findViewById(R.id.chkAutoStart);
 
         mSettings = getSharedPreferences(Preferences.PREFS_NAME, 0);
@@ -129,7 +124,6 @@ public class GravityRinger extends Activity  implements SensorListener {
         txtDelay.setText(""+mSettings.getInt(Preferences.DELAY, 1000));
         txtSilenceThreshold.setText(""+mSettings.getFloat(Preferences.SILENCE_GRAVITY, 5.0f));
 		txtNoisyThreshold.setText(""+mSettings.getFloat(Preferences.NOISY_GRAVITY, -5.0f));
-		chkKeyLock.setChecked(mSettings.getBoolean(Preferences.LOCK_KEYS, true));
 		chkAutoStart.setChecked(mSettings.getBoolean(Preferences.AUTO_START, true));
     }
     
@@ -181,44 +175,6 @@ public class GravityRinger extends Activity  implements SensorListener {
     	
 		return super.onCreateOptionsMenu(menu);
 	}
-    
-    @Override
-	public boolean onTouchEvent(MotionEvent event) {
-    	if (event.getAction() == MotionEvent.ACTION_DOWN) {
-    		mGesture = new String();
-			mGestureX = -1;
-			mGestureY = -1;
-    		
-    	} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-    		if (mGestureX == -1 || mGestureY == -1) {
-    			mGestureX = event.getX();
-    			mGestureY = event.getY();
-    		} else {
-    			float x = event.getX();
-    			float y = event.getY();
-    			if (mGestureX - x < mGestureY - y)
-    				if (mGestureY - y > 0)
-    					mGesture += "U";
-    				else 
-    					mGesture += "R";
-				else if (mGestureX - x > mGestureY - y)
-    				if (mGestureX - x > 0)
-    					mGesture += "L";
-    				else 
-    					mGesture += "D";
-    			
-    			mGestureX = event.getX();
-    			mGestureY = event.getY();
-    		}
-    		//if (event.getHistorySize() == )
-    		
-    	} else if (event.getAction() == MotionEvent.ACTION_UP)
-    		Log.d(TAG, "Gestures" + mGesture);
-//    		startService();
-    		//stopService();
-    	
-		return super.onTouchEvent(event);
-	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -263,7 +219,7 @@ public class GravityRinger extends Activity  implements SensorListener {
 		SharedPreferences.Editor editor = mSettings.edit();
 		int delay = 0;
 		Float silence = 0f, noisy = 0f;
-		boolean error = false, lockKeys;
+		boolean error = false;
 		try {
 			delay = Integer.parseInt(this.txtDelay.getText().toString());
 		} catch (NumberFormatException ex) {
@@ -283,14 +239,12 @@ public class GravityRinger extends Activity  implements SensorListener {
 			error = true;
 		}
 		
-		lockKeys = this.chkKeyLock.isChecked();
 		boolean autoStart = chkAutoStart.isChecked();
 		
 		if (!error) {
 			editor.putInt(Preferences.DELAY, delay);
 			editor.putFloat(Preferences.NOISY_GRAVITY, noisy);
 			editor.putFloat(Preferences.SILENCE_GRAVITY, silence);
-			editor.putBoolean(Preferences.LOCK_KEYS, lockKeys);
 			editor.putBoolean(Preferences.AUTO_START, autoStart);
 			editor.commit();
 			if (notify)
@@ -299,16 +253,11 @@ public class GravityRinger extends Activity  implements SensorListener {
 		}
 		return !error;
 	}
-
-	private String mGesture;
-	private float mGestureX;
-	private float mGestureY;
 	
 	private LinearLayout layMain;
 	private EditText txtDelay;
     private EditText txtNoisyThreshold;
     private EditText txtSilenceThreshold;
-    private CheckBox chkKeyLock;
     private CheckBox chkAutoStart;
     
     private Button btnSetNoisy;
@@ -316,7 +265,6 @@ public class GravityRinger extends Activity  implements SensorListener {
     private Button btnActivateService;
     private Button btnDeactivateService;
 	private SensorManager mSensorMgr = null;
-	private TelephonyManager mTelephonyMgr;	
 	
 	private SharedPreferences mSettings;
 	private boolean mReadSensor = false;
