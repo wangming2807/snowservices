@@ -38,7 +38,7 @@ public class SnowGestureTest extends Activity {
         
         txtGesture = (EditText)findViewById(R.id.txtGesture);
         
-        mGesture = new SnowGesture(true);
+        mGesture = new SnowGesture();
         mGesture.registerGestureCompleteListener(new SnowGesture.GestureCompleteListener() {
 		@Override
 		public void onGestureCompleted(String gesture) {
