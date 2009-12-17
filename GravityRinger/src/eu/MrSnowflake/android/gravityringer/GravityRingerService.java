@@ -30,13 +30,17 @@ public class GravityRingerService extends Service implements SensorListener {
 	    	stopSelf();
 	    } else
 	    	Log.i(TAG, "SensorListener found");
-        audioMgr = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        mSilenced = audioMgr.getRingerMode() != AudioManager.RINGER_MODE_NORMAL;
-	    
-        SharedPreferences settings = getSharedPreferences(GravityRinger.Preferences.PREFS_NAME, 0);
-        mDelayMillis = settings.getInt(GravityRinger.Preferences.DELAY, 1000);
-        mSilenceGravity = settings.getFloat(GravityRinger.Preferences.SILENCE_GRAVITY, 5.0f);
-        mNoisyGravity = settings.getFloat(GravityRinger.Preferences.NOISY_GRAVITY, -5.0f);
+
+	        audioMgr = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        	mSilenced = audioMgr.getRingerMode() != AudioManager.RINGER_MODE_NORMAL;
+	        //mKeyguardMgr = (KeyguardManager)this.getSystemService(Context.KEYGUARD_SERVICE);
+        	mTelephonyMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+
+	        SharedPreferences settings = getSharedPreferences(GravityRinger.Preferences.PREFS_NAME, 0);
+        	mDelayMillis = settings.getInt(GravityRinger.Preferences.DELAY, 1000);
+	        mSilenceGravity = settings.getFloat(GravityRinger.Preferences.SILENCE_GRAVITY, 5.0f);
+        	mNoisyGravity = settings.getFloat(GravityRinger.Preferences.NOISY_GRAVITY, -5.0f);
+	        mLockKeys = settings.getBoolean(GravityRinger.Preferences.LOCK_KEYS, true);
 	}
 
 	@Override
